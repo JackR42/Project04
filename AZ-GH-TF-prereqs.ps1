@@ -1,5 +1,4 @@
-## AZ-GH-TF-prereqs.ps1
-## AzureDevops-GitHub-Terraform pre-requisits
+## code/AZ-GH-TF-Pre-Reqs.ps1
 ## https://4bes.nl/2019/07/11/step-by-step-manually-create-an-azure-devops-service-connection-to-azure/
 
 #Log into Azure
@@ -13,11 +12,12 @@ $subscriptionId=$(az account show --query id -o tsv)
 $subscriptionName = "S2-Visual Studio Ultimate with MSDN"
 $resourceGroupNameProject = "S2-RG-$ProjectName"
 $resourceGroupNameCore = "$ResourceGroupNameProject-CORE"
-$storageName = "storage$ProjectName"
-$kvName = "keyvault$ProjectName"
-$appName="SPN-$ProjectName" #AppName=SpnName
+$storageName = "storage$ProjectName$randomInt"
+$kvName = "keyvault$ProjectName$randomInt"
+#$appName="SPN-$ProjectName" #AppName=SpnName
+$spnName="SPN-$ProjectName" #AppName=SpnName
 $region = "westeurope"
-$spnName = "$appName"
+#$spnName = "$appName"
 $dwp = Read-Host -Prompt "Dwp?"
 
 # Create a CORE resource group
@@ -50,7 +50,6 @@ az storage account create `
     --min-tls-version "TLS1_2"
 
 #az storage account list
-#permissions StorageAccount???
 
 # Authorize the operation to create the container - Signed in User (Storage Blob Data Contributor Role)
 az ad signed-in-user show --query id -o tsv | foreach-object {
@@ -89,10 +88,11 @@ $null = az keyvault secret set --vault-name $kvName --name "ARM-SUBSCRIPTION-ID"
 $null = az keyvault secret set --vault-name $kvName --name "ARM-SPN" --value $spnObj.displayName
 $null = az keyvault secret set --vault-name $kvName --name "ARM-RND" --value $randomInt 
 $null = az keyvault secret set --vault-name $kvName --name "ARM-RG-Project" --value $resourceGroupNameProject
-$null = az keyvault secret set --vault-name $kvName --name "SQLServer-InstanceName" --value "sqlserver$randomInt"
+$null = az keyvault secret set --vault-name $kvName --name "SQLServer-InstanceName" --value "sqlserver$ProjectName$randomInt"
 $null = az keyvault secret set --vault-name $kvName --name "SQLServer-InstanceAdminUserName" --value 'admindba'
 $null = az keyvault secret set --vault-name $kvName --name "SQLServer-InstanceAdminPassword" --value $dwp
-$null = az keyvault secret set --vault-name $kvName --name "SQLServer-Database1Name" --value "dba$randomInt"
+$null = az keyvault secret set --vault-name $kvName --name "SQLServer-Database1Name" --value "dba"
+$null = az keyvault secret set --vault-name $kvName --name "WebSite-StorageName" --value "website$ProjectName$randomInt"
 
 
 # Assign additional RBAC role to Terraform Service Principal Subscription as Contributor and access to backend storage
@@ -122,10 +122,15 @@ foreach($object_properties in $spnObj.psobject.properties) {
         Write-Output "Tenant: $object_properties"
     }
 }
-Write-Output "Service COnnection Name (SPN): $spnName"
+Write-Output "Service Connection Name (SPN): $spnName"
+Write-Output "KeyVault: $kvName"
 
 
 
 ## https://dev.to/pwd9000/multi-environment-azure-deployments-with-terraform-and-github-2450
 ## https://subhankarsarkar.com/simple-way-to-create-spn-and-service-connection-for-azure-devops-pipelines/
 ## https://github.com/Ba4bes/New-AzDoServiceConnection/blob/main/NewAzDoServiceConnection/NewAzDoServiceConnection.psm1
+
+## Static Web App: https://www.tatvasoft.com/blog/serverless-web-application-in-azure/
+## https://github.com/subhankars/StaticWebApp
+## https://docs.microsoft.com/en-us/aspnet/web-pages/overview/data/5-working-with-data
