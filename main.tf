@@ -47,6 +47,13 @@ resource "azurerm_mssql_server" "project" {
  administrator_login = data.azurerm_key_vault_secret.secret2.value
  administrator_login_password = data.azurerm_key_vault_secret.secret3.value
 }
+# Create FW rule to allow access from AZURE SERVICES, e.g. PowerApp
+resource "azurerm_mssql_firewall_rule" "project-fw0" {
+  name = "FirewallRule0"
+  server_id = azurerm_mssql_server.project.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address = "0.0.0.0"
+}
 # Create FW rule to allow access from OFFICE
 resource "azurerm_mssql_firewall_rule" "project-fw1" {
   name = "FirewallRule1"
