@@ -21,7 +21,7 @@ steps:
   displayName: 'TF_KeyVault'
   inputs:
     azureSubscription: 'SPN-project04'
-    KeyVaultName: 'keyvaultproject04212254'
+    KeyVaultName: 'keyvaultproject04875842'
     SecretsFilter: '*'
     RunAsPreJob: true
 - task: TerraformTaskV3@3
@@ -31,7 +31,7 @@ steps:
     command: 'init'
     backendServiceArm: 'SPN-project04'
     backendAzureRmResourceGroupName: 'S2-RG-project04-CORE'
-    backendAzureRmStorageAccountName: 'storageproject04212254'
+    backendAzureRmStorageAccountName: 'storageproject04875842'
     backendAzureRmContainerName: 'tfstate'
     backendAzureRmKey: 'main.tfstate'
     
