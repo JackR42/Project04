@@ -80,3 +80,30 @@ resource "azurerm_mssql_database" "project" {
   storage_account_type = "Local"
 # license_type = "LicenseIncluded"
 }
+#WebSite
+#Create Storage account
+resource "azurerm_storage_account" "project" {
+  name = "websiteproject04875842"
+  resource_group_name = azurerm_resource_group.project.name
+ 
+  location = azurerm_resource_group.project.location
+  account_tier = "Standard"
+  account_replication_type = "LRS"
+  account_kind = "StorageV2"
+ 
+  static_website {
+     index_document = "index.html"
+  }
+}
+
+#Add index.html to blob storage
+resource "azurerm_storage_blob" "project" {
+  name                   = "index.html"
+  storage_account_name   = azurerm_storage_account.project.name
+  storage_container_name = "$web"
+  type                   = "Block"
+  content_type           = "text/html"
+  source_content         = "<H1><center>Hello project42 - DEV!</center></H1>"
+}
+# https://websiteproject04875842.z6.web.core.windows.net
+### END MAIN
